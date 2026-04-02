@@ -1,0 +1,5 @@
+# --- CUSTOM USER/INSTALLER DISPATCHERS ---
+# Add custom dispatchers, scripts, or wrapper names below this line
+# Each entry should be on a new line.
+
+# This is a placeholder line for a future update, in the meanwhile, use dispatchers.list to use custom entries as prompted above. Be aware that package updates and re-initializing will remove your custom entries.

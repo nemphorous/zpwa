@@ -1,0 +1,55 @@
+#!/bin/bash
+set -e
+
+# --- INITIALIZE ---
+source "$HOME/.zpwa/variables/variables.sh"
+INDEX_FILE="$BASE_DIR/zpwa.index"
+
+if [[ ! -s "$INDEX_FILE" ]]; then
+    echo -e "\e[31mNo Zen PWAs found in index.\e[0m"
+    exit 1
+fi
+
+# --- GATHER FROM INDEX ---
+# Format: SAFE_NAME|APP_NAME|PROFILE|DESKTOP|ICON
+CHOICES=()
+while IFS='|' read -r sname aname prof desk icon; do
+    CHOICES+=("$aname ($sname)")
+done < "$INDEX_FILE"
+
+# --- SELECTION GATE ---
+SELECTED_STRING=$(gum choose --no-limit --header "Select Zen PWAs to remove..." --selected-prefix="✗ " "${CHOICES[@]}")
+
+SELECTED_APPS=()
+while IFS= read -r line; do
+    [[ -n "$line" ]] && SELECTED_APPS+=("$line")
+done <<< "$SELECTED_STRING"
+
+if (( ${#SELECTED_APPS[@]} == 0 )); then
+    echo "No apps selected. Exiting."
+    exit 0
+fi
+
+# --- REMOVAL LOGIC ---
+for ENTRY in "${SELECTED_APPS[@]}"; do
+    # Extract SAFE_NAME from the "App Name (safe_name)" string
+    S_NAME=$(echo "$ENTRY" | grep -oP '\(\K[^\)]+')
+    
+    # Retrieve full paths from index for this specific S_NAME
+    LINE=$(grep "^${S_NAME}|" "$INDEX_FILE")
+    IFS='|' read -r sname aname prof desk icon <<< "$LINE"
+
+    echo -e "\e[34mRemoving $aname...\e[0m"
+
+    # Precise removal based on index data
+    [[ -d "$prof" ]] && rm -rf "$prof" && echo "  - Profile directory deleted."
+    [[ -f "$desk" ]] && rm -f "$desk" && echo "  - Desktop file deleted."
+    [[ -f "$icon" ]] && rm -f "$icon" && echo "  - Icon deleted."
+
+    # Update Index: Remove the specific line
+    sed -i "/^${sname}|/d" "$INDEX_FILE"
+
+    echo -e "\e[32m✔ $aname successfully removed.\e[0m\n"
+done
+
+echo -e "\e[32mCleanup complete.\e[0m"

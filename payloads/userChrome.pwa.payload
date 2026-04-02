@@ -1,0 +1,69 @@
+/**
+ * ZEN PWA CSS PAYLOAD
+ * File: userChrome.pwa.payload
+ * Description: Total UI erasure for Zen-based PWAs.
+ */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* --- HIDE ALL TOOLBARS --- */
+#nav-bar,
+#TabsToolbar,
+#PersonalToolbar,
+#sidebar-box,
+#sidebar-header,
+#TabsToolbar-customization-target,
+.titlebar-buttonbox-container {
+    display: none !important;
+    visibility: collapse !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+}
+
+/* --- ZEN-SPECIFIC ELEMENT STRIPPING --- */
+/* Target Zen's custom vertical tab bar and sidebar wrappers */
+#zen-tabs-wrapper,
+#zen-sidebar-layout,
+.zen-sidebar-canvas,
+#zen-workspaces-bundle {
+    display: none !important;
+    width: 0 !important;
+}
+
+/* --- CLEANING THE APP SURFACE --- */
+/* Ensure the web content takes up 100% of the window */
+#browser,
+#main-window,
+#content-deck,
+#appcontent,
+browser {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* --- OPTIONAL: MOUSE-OVER REVEAL (Commented Out) --- */
+/* If you ever need the URL bar in an emergency, 
+   this would reveal it when hovering at the very top. 
+   Keeping it disabled for the "True PWA" feel.
+*/
+/*
+#nav-bar:hover {
+    display: flex !important;
+    visibility: visible !important;
+    height: auto !important;
+}
+*/
+
+/* --- SCROLLBAR HYGIENE --- */
+/* Optional: Makes scrollbars thinner to match a modern PWA look */
+:root {
+    scrollbar-width: thin;
+    scrollbar-color: #585b70 #1e1e2e; /* Catppuccin Mocha surface0 and base */
+}
+
+/* Hide the right-click context menu entirely */
+#contentAreaContextMenu {
+  display: none !important;
+}

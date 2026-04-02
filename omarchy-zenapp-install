@@ -1,0 +1,128 @@
+#!/bin/bash
+set -e
+
+# --- INITIALIZE ---
+source "$HOME/.zpwa/variables/variables.sh"
+
+# --- DEPENDENCY CHECK ---
+if [[ ! -f "$PWA_MONITOR" ]]; then
+    echo -e "\e[31mError: Monitor script not found at $PWA_MONITOR\e[0m"
+    exit 1
+fi
+
+if [[ ! -f "$MASTER_JS" || ! -f "$MASTER_CSS" || ! -f "$MASTER_JSON" ]]; then
+    echo -e "\e[31mError: Payloads not found in $PAYLOAD_DIR\e[0m"
+    exit 1
+fi
+
+# --- INTERACTIVE INPUT ---
+echo -e "\e[32m󰗝 Zen PWA Installer\e[0m\n"
+
+APP_NAME=$(gum input --prompt "Name> " --placeholder "Proton Mail")
+
+while true; do
+    APP_URL=$(gum input --prompt "URL> " --placeholder "https://mail.proton.me")
+    [[ ! $APP_URL =~ ^[a-zA-Z][a-zA-Z0-9+.-]*: ]] && APP_URL="https://$APP_URL"
+
+    echo -ne "  \e[34m󰔟 Validating URL...\e[0m"
+    HTTP_STATUS=$(curl -Is -o /dev/null -w "%{http_code}" --max-time 5 "$APP_URL" || echo "000")
+    echo -ne "\r\033[K"
+
+    if [[ "$HTTP_STATUS" -eq 200 ]]; then
+        break
+    else
+        echo -e "  \e[31m󰅚 URL unreachable (Status: $HTTP_STATUS)\e[0m"
+        if gum confirm "The URL seems invalid or down. Proceed anyway?"; then
+            break
+        fi
+    fi
+done
+
+# Environment Variables
+SAFE_NAME=$(get_safe_name "$APP_NAME")
+PROFILE_PATH="$ZEN_DIR/webapp.$SAFE_NAME"
+ICON_PATH="$ICON_DIR/$SAFE_NAME.png"
+FAVICON_URL="https://www.google.com/s2/favicons?domain=${APP_URL}&sz=128"
+INDEX_FILE="$BASE_DIR/zpwa.index"
+
+# --- ICON HANDLING ---
+mkdir -p "$ICON_DIR"
+
+if gum confirm "Would you like to automatically fetch an icon?" --affirmative "Automatic" --negative "Manual"; then
+    if ! curl -fsSL -o "$ICON_PATH" "$FAVICON_URL" 2>/dev/null || [[ ! -s "$ICON_PATH" ]]; then
+        AUTO_FETCH_FAILED=true
+    else
+        AUTO_FETCH_FAILED=false
+    fi
+else
+    AUTO_FETCH_FAILED=true
+fi
+
+if [[ "$AUTO_FETCH_FAILED" == true ]]; then
+    while true; do
+        ICON_URL=$(gum input --prompt "Icon URL> " --placeholder "Leave blank for default globe icon")
+        if [[ -z "$ICON_URL" ]]; then break; fi
+
+        echo -ne "  \e[34m󰔟 Validating Icon URL...\e[0m"
+        ICON_STATUS=$(curl -Isf -o /dev/null -w "%{http_code}" --max-time 5 "$ICON_URL" 2>/dev/null || echo "000")
+        echo -ne "\r\033[K"
+
+        if [[ "$ICON_STATUS" -eq 200 ]]; then
+            curl -fsSL -o "$ICON_PATH" "$ICON_URL" 2>/dev/null
+            break
+        else
+            echo -e "  \e[31m󰅚 Icon unreachable\e[0m"
+            if gum confirm "Use default globe icon instead?"; then
+                break
+            fi
+        fi
+    done
+fi
+
+[[ ! -s "$ICON_PATH" ]] && ICON_PATH="web-browser"
+
+# --- WINDOW MANAGEMENT TUI ---
+if gum confirm "Set default window behavior." --affirmative "Floating" --negative "Tiling"; then
+    GEN_SCRIPT="$GEN_DIR/generate_desktop_float.sh"
+    L_TYPE="Floating"
+else
+    GEN_SCRIPT="$GEN_DIR/generate_desktop_tiled.sh"
+    L_TYPE="Tiling"
+fi
+
+# --- CONFIRM CREATION GATE ---
+echo -e "Review Installation Details:"
+echo -e "  • App Name:  $APP_NAME"
+echo -e "  • URL:       $APP_URL"
+echo -e "  • Layout:    $L_TYPE\n"
+
+if ! gum confirm "Confirm PWA Creation for $APP_NAME?" --affirmative "Proceed" --negative "Cancel"; then
+    exit 0
+fi
+
+# --- PROFILE CREATION & CONTENT INJECTION ---
+echo "Generating portable profile: $PROFILE_PATH"
+mkdir -p "$PROFILE_PATH/chrome"
+
+cat "$MASTER_JS"   > "$PROFILE_PATH/user.js"
+cat "$MASTER_CSS"  > "$PROFILE_PATH/chrome/userChrome.css"
+cat "$MASTER_JSON" > "$PROFILE_PATH/zen-keyboard-shortcuts.json"
+
+sed -i "s|chrome://browser/content/blanktab.html|$APP_URL|g" "$PROFILE_PATH/user.js"
+ln -sf "$ZEN_BIN" "$PROFILE_PATH/$SAFE_NAME"
+
+# --- GENERATE .DESKTOP FILE ---
+if [[ -f "$GEN_SCRIPT" ]]; then
+    export APP_NAME SAFE_NAME APP_URL PROFILE_PATH ICON_PATH PWA_MONITOR
+    bash "$GEN_SCRIPT"
+else
+    echo -e "\e[31mError: Generation script not found at $GEN_SCRIPT\e[0m"
+    exit 1
+fi
+
+# --- INDEX REGISTRATION ---
+# Format: SAFE_NAME|APP_NAME|PROFILE_PATH|DESKTOP_PATH|ICON_PATH
+FINAL_DESKTOP="$DESKTOP_DIR/webapp.$SAFE_NAME.desktop"
+echo "${SAFE_NAME}|${APP_NAME}|${PROFILE_PATH}|${FINAL_DESKTOP}|${ICON_PATH}" >> "$INDEX_FILE"
+
+echo -e "\n\e[32m✔ Success! $APP_NAME is now a self-contained Zen PWA.\e[0m"

@@ -1,0 +1,18 @@
+# --- ZEN PWA ---
+# This submap is triggered by pwa_monitor.sh when a webapp is focused
+submap = pwa_mute
+
+# --- DYNAMIC BINDS ---
+# For more information check source file
+ source = ~/.zpwa/binds/pwa_dynamic_binds.conf
+
+# --- SILENCED BINDS ---
+# For more information check source file
+ source = ~/.zpwa/binds/pwa_silenced_binds.conf
+
+# --- EMERGENCY BINDS ---
+# For more information check source file
+source = ~/.zpwa/binds/pwa_emergency_binds.conf
+
+# Reset the submap
+submap = reset

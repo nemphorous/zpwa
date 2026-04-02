@@ -1,0 +1,11 @@
+# --- INSTALL MENU ---
+INST_SEARCH_ICON="  Web App"
+INST_REPLACE_ICON="󰗝  Web App"
+INST_SEARCH_FUNC="*Web*) present_terminal omarchy-webapp-install ;;"
+INST_REPLACE_FUNC="# *Web*) present_terminal omarchy-webapp-install ;;\n  *Web*) present_terminal omarchy-zenapp-install ;;"
+
+# --- REMOVE MENU ---
+RM_SEARCH_ICON="  Web App"
+RM_REPLACE_ICON="󰗝  Web App"
+RM_SEARCH_FUNC="*Web*) present_terminal omarchy-webapp-remove ;;"
+RM_REPLACE_FUNC="# *Web*) present_terminal omarchy-webapp-remove ;;\n  *Web*) present_terminal omarchy-zenapp-remove ;;"

@@ -1,0 +1,174 @@
+/**
+ * ZEN PWA MASTER USERJS PAYLOAD
+ * File: userjs.pwa.payload
+ * Targets: Total UI stripping, Single-Tab enforcement, and Session wiping.
+ */
+
+// --- THE "TAB KILLER" & SESSION LOGIC ---
+// Ensures that every launch is a "Clean Slate" with 0 previous tabs.
+user_pref("browser.startup.page", 1);                        // Start with the URL from the .desktop file
+user_pref("browser.sessionstore.resume_from_crash", false);     // Do not restore tabs after crash/kill
+user_pref("browser.sessionstore.max_tabs_undo", 0);          // Forget closed tabs immediately
+user_pref("browser.sessionstore.max_windows_undo", 0);       // Forget closed windows
+user_pref("browser.sessionstore.interval", 10000000);        // Effectively disable session saving
+user_pref("browser.sessionstore.privacy_level", 2);          // Don't save session data for any site
+user_pref("browser.tabs.warnOnClose", false);                // Don't ask to save tabs on exit
+user_pref("browser.shell.checkDefaultBrowser", false);       // Disable "Default Browser" check
+
+user_pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");	//Defines a blank internal page as the default homepage to ensure a clean startup
+user_pref("browser.startup.couldRestoreSession.count", 0);	// Ensures PWA site is the only tab on launch
+user_pref("browser.laterrun.bookkeeping.sessionCount", 1);	// Manually sets the session count to prevent "first-run" or "later-run" welcome screens from appearing
+
+// Forces cleanup of form and history data to prevent session "leaks"
+user_pref("privacy.clearOnShutdown_v2.formdata", true);
+user_pref("privacy.clearSiteData.browsingHistoryAndDownloads", true);
+user_pref("privacy.clearSiteData.formdata", true);
+user_pref("privacy.clearSiteData.siteSettings", true);
+user_pref("privacy.purge_trackers.date_in_cookie_database", "0");
+user_pref("privacy.sanitize.clearOnShutdown.hasMigratedToNewPrefs3", true);
+
+user_pref("services.sync.clients.lastSync", "0");
+user_pref("services.sync.globalScore", 0);
+user_pref("services.sync.nextSync", 0);
+
+user_pref("browser.startup.firstrunSkipsHomepage", true);
+user_pref("browser.aboutwelcome.enabled", false);
+user_pref("datareporting.policy.dataSubmissionPolicyAccepted", true);
+user_pref("browser.setDefaultBrowserUserChosen", true);
+user_pref("browser.shell.checkDefaultBrowser", false);
+
+user_pref("browser.startup.homepage_override.mstone", "ignore"); // Prevents version-change triggers
+user_pref("browser.messaging-system.whatsNewPanel.enabled", false); // Disables the "What's New" popup
+user_pref("browser.uitour.enabled", false); // Disables the highlighting of new features
+user_pref("browser.uitour.url", "");
+user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
+
+// --- SINGLE-WINDOW ENFORCEMENT ---
+// Prevents the PWA from ever spawning a second tab or window.
+user_pref("browser.link.open_newwindow", 2);                 // Force all links into the current tab
+user_pref("browser.link.open_newwindow.restriction", 0);     // Strict enforcement
+user_pref("browser.tabs.loadInBackground", false);           // New content always takes focus
+user_pref("dom.disable_window_flip", true);                  // Prevent JS from resizing the PWA window
+user_pref("dom.disable_open_during_load", true);             // Block popups that create new tabs
+
+user_pref("browser.newtabpage.enabled", false);
+user_pref("browser.ml.linkPreview.longPress", false); // Prevents accidental preview popups
+
+user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false); // Prevents PWA-breaking pop-out windows
+
+user_pref("zen.splitView.enable-tab-drop", false);
+user_pref("zen.urlbar.replace-newtab", false);
+user_pref("zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url", true);
+user_pref("zen.urlbar.suggestions-learner", "{}");
+
+// --- UI STRIPPING ---
+user_pref("zen.view.compact.enable-at-startup", true);
+user_pref("zen.view.experimental-no-window-controls", true);
+user_pref("zen.view.use-single-toolbar", true);
+user_pref("zen.view.hide-toolbar-standard-modes", true);
+user_pref("zen.view.compact-mode-fixed", true);
+user_pref("sidebar.visibility", "hide-sidebar");
+user_pref("zen.sidebar.enabled", false);
+user_pref("zen.sidebar.hidden", true);
+user_pref("zen.tabs.show-newtab-vertical", false);
+user_pref("browser.tabs.drawInTitlebar", true);
+user_pref("browser.uidensity", 1);                           // Compact density
+
+user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"unified-extensions-area\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"customizableui-special-spring1\",\"vertical-spacer\",\"urlbar-container\",\"customizableui-special-spring2\",\"unified-extensions-button\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\"],\"vertical-tabs\":[],\"PersonalToolbar\":[\"import-button\"]}}");
+user_pref("browser.preferences.experimental.hidden", true);
+user_pref("browser.proton.toolbar.version", 3);
+user_pref("browser.theme.toolbar-theme", 0);
+
+user_pref("extensions.activeThemeID", "default-theme@mozilla.org");
+
+user_pref("sidebar.backupState", "{\"command\":\"\",\"panelOpen\":false,\"launcherExpanded\":false,\"launcherVisible\":false}"); // Forces sidebar to stay closed
+user_pref("zen.glance.enabled", false); // Disables "Glance" overlay
+user_pref("zen.glance.enable-contextmenu-search", false);
+user_pref("zen.glance.open-essential-external-links", false);
+user_pref("zen.downloads.download-animation", false); // Prevents download popups from breaking the UI
+
+user_pref("zen.view.compact.show-sidebar-and-toolbar-on-hover", false);
+user_pref("zen.view.show-newtab-button-top", false);
+user_pref("zen.themes.disable-all", true);
+user_pref("zen.ui.migration.compact-mode-button-added", true);
+user_pref("zen.ui.migration.version", 6);
+user_pref("zen.welcome-screen.seen", true);
+user_pref("zen.workspaces.active", "{28a6e3a6-2ad8-453b-aef5-baf4845b4808}");
+user_pref("zen.workspaces.separate-essentials", false);
+user_pref("zen.workspaces.swipe-actions", false);
+
+// --- KEYBIND & NAVIGATION DISABLES ---
+// Disables the "Browser" feel so you don't accidentally navigate away.
+user_pref("zen.keyboard.shortcuts.enabled", false);          // Disable Zen-specific shortcuts
+user_pref("zen.keyboard.shortcuts.disable-mainkeyset-clear", true);
+user_pref("permissions.default.shortcuts", 2);               // Prevent site keybind hijacking
+user_pref("accessibility.typeaheadfind", false);             // Disable 'Find as you type'
+user_pref("browser.urlbar.suggest.history", false);
+user_pref("browser.urlbar.suggest.bookmark", false);
+user_pref("browser.urlbar.suggest.openpage", false);
+user_pref("browser.urlbar.suggest.engines", false);
+user_pref("browser.urlbar.autocomplete.enabled", false);
+
+user_pref("browser.warnOnQuitShortcut", false);
+user_pref("browser.urlbar.suggest.clipboard", false);
+user_pref("browser.urlbar.suggest.quicksuggest.all", false);
+user_pref("browser.urlbar.suggest.recentsearches", false);
+
+user_pref("layers.acceleration.disabled", true); // Matches your manual diagnostic preference
+user_pref("dom.forms.autocomplete.formautofill", false); 
+user_pref("extensions.formautofill.addresses.enabled", false); // Disables annoying address popups
+user_pref("extensions.formautofill.creditCards.enabled", false); // Disables credit card popups
+user_pref("media.hardwaremediakeys.enabled", false); // Prevents global OS keys from affecting PWA media
+
+user_pref("signon.autofillForms", false); // Prevents form hijacking
+user_pref("signon.rememberSignons", false); // Keeps the PWA environment stateless regarding credentials
+user_pref("signon.generation.enabled", false);
+user_pref("signon.firefoxRelay.feature", "disabled");
+
+user_pref("zen.keyboard.shortcuts.version", 16);
+user_pref("zen.mediacontrols.enabled", false);
+
+// --- DATA, SYNC & TELEMETRY ---
+// Keeps the PWA lean and private.
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("services.sync.engine.addons", false);
+user_pref("services.sync.engine.bookmarks", false);
+user_pref("services.sync.engine.history", false);
+user_pref("services.sync.engine.passwords", false);
+user_pref("services.sync.engine.prefs", false);
+user_pref("services.sync.engine.tabs", false);
+user_pref("browser.bookmarks.restore_default_bookmarks", false);
+
+user_pref("app.normandy.first_run", false);
+
+user_pref("nimbus.rollouts.enabled", false); // Disables experimental feature remote-push
+user_pref("captchadetection.lastSubmission", 1773611);
+user_pref("doh-rollout.doneFirstRun", true);
+user_pref("doh-rollout.skipHeuristicsCheck", true);
+user_pref("privacy.globalprivacycontrol.was_ever_enabled", true);
+user_pref("privacy.userContext.enabled", false); // Keep UI simple by disabling containers in PWA
+
+user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
+
+// --- PERMISSION BYPASS (Persistent Storage) ---
+user_pref("permissions.default.desktop-notification", 1); // 1 = Allow, 2 = Block
+user_pref("permissions.default.geo", 2);                 // Block location by default
+user_pref("dom.push.enabled", true);                     // Enable push for WhatsApp
+user_pref("dom.storage.persistent_storage.allow_by_default", true); // The "Silver Bullet" attempt
+
+// --- COSMETIC & ENGINE ---
+user_pref("toolkit.cosmeticAnimations.enabled", false);      // Snappier performance
+user_pref("reader.parse-on-load.enabled", false);            // No reader mode
+user_pref("browser.formfill.enable", false);                 // No annoying form autofill
+user_pref("browser.helperApps.deleteTempFileOnExit", true);  // Clean temp files
+
+user_pref("zen.mods.auto-update", false);
+user_pref("services.settings.update_enabled", false);        // Prevents remote settings sync/stalls
+
+// --- ENABLE SCRIPT LOADING ---
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true); // Vital for userChrome.css and userChrome.js
+user_pref("browser.tabs.remote.autostart", true);
+
+// Allow websites to use their own context menus (Discord, etc.)
+user_pref("dom.event.contextmenu.enabled", true);
