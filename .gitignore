@@ -1,3 +1,6 @@
 *.gif
 *.mp4
 aur.sh
+
+# Exceptions
+!/docs/assets/TUI.gif
