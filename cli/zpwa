@@ -17,7 +17,6 @@ else
     INITIALIZED=false
 fi
 
-# Internal helper for Omarchy presentation
 present_terminal() {
     omarchy-launch-floating-terminal-with-presentation "$1"
 }
@@ -33,19 +32,19 @@ show_help() {
         echo "Usage:  zpwa [command]"
         echo ""
         echo "Commands:"
-        echo "  install      New Zen PWA"
-        echo "  rm [--all]   Remove PWAs"
-        echo "  ls           List PWAs"
-        echo "  update       Sync binds/templates"
-        echo "  monitor      Run PWA monitor (verbose)"
+        echo "  install       New Zen PWA"
+        echo "  rm [--all]    Remove PWAs"
+        echo "  ls            List PWAs"
+        echo "  update        Sync binds/templates"
+        echo "  monitor       Run PWA monitor (verbose)"
         echo ""
         echo "Maintenance:"
-        echo "  setup        Re-run environment initialization"
-        echo "  revert       Restore original system state"
-        echo "  menu-change  Change menu integration style"
-        echo "  restore      [menu|binds] Select and restore snapshots"
+        echo "  setup         Re-run environment initialization"
+        echo "  revert        Restore original system state"
+        echo "  menu-change   Change menu integration style"
+        echo "  restore       [menu|binds] Select and restore snapshots"
     fi
-    echo "  -h, --help   Show this menu"
+    echo "  -h, --help    Show this menu"
 }
 
 # --- INTERNAL UTILITIES ---
@@ -58,18 +57,22 @@ do_restore() {
     [[ "$target" == "menu" ]] && config_file="$HOME/.config/omarchy/extensions/menu.sh"
     [[ "$target" == "bind" ]] && config_file="$HOME/.config/hypr/bindings.conf"
 
-    if [[ ! -d "$snap_dir" ]]; then
+    if [[ ! -d "$snap_dir" ]] || ! ls "$snap_dir"/*.bak >/dev/null 2>&1; then
         echo "No snapshots found for $target."
         return 1
     fi
 
-    local selection=$(ls -t "$snap_dir" | gum filter --placeholder "Select snapshot to restore...")
-    [[ -z "$selection" ]] && return
+    local selection=$(ls -t "$snap_dir"/*.bak 2>/dev/null | xargs -n 1 basename | gum filter --placeholder "Select snapshot to restore...")
+
+    [[ -z "$selection" ]] && return 1
 
     echo -e "\e[33mSelected: $snap_dir/$selection\e[0m"
     if gum confirm "Restore this snapshot to $config_file?"; then
         cp "$snap_dir/$selection" "$config_file"
         echo "✔ Restoration complete."
+        return 0
+    else
+        return 1
     fi
 }
 
@@ -80,7 +83,7 @@ do_setup() {
     local TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
     local MENU_SNAP_DIR="$BASE_DIR/snapshots/menu"
 
-    if [[ -d "$MENU_SNAP_DIR" ]] && [[ "$(ls -A "$MENU_SNAP_DIR")" ]]; then
+    if [[ -d "$MENU_SNAP_DIR" ]] && ls "$MENU_SNAP_DIR"/*.bak >/dev/null 2>&1; then
         echo -e "\e[33mExisting snapshots detected.\e[0m"
         if gum confirm "Restore a snapshot before proceeding?"; then
             if ! do_restore "menu"; then
@@ -99,10 +102,8 @@ do_setup() {
         exit 1
     fi
 
-    # SYNC: Exclude system-only files, the dispatcher itself, and installer files
     cp -r "$MASTER_SOURCE"/!(conf|cli|zpwa|PKGBUILD|zpwa.install|docs|README.md) "$BASE_DIR/"
-    
-    # Ensure execution rights for everything in the local home dir
+
     find "$BASE_DIR/scripts" -name "*.sh" -exec chmod +x {} + 2>/dev/null
     chmod +x "$BASE_DIR/omarchy-zenapp-install" "$BASE_DIR/omarchy-zenapp-remove" 2>/dev/null
 
@@ -112,7 +113,6 @@ do_setup() {
     source "$BASE_DIR/variables/variables.sh"
     bash "$BASE_DIR/scripts/generate/generate_pwa_binds.sh"
 
-    # Hyprland Injection
     local HYPR_CONF="$HOME/.config/hypr/bindings.conf"
     local BIND_PAYLOAD="$MASTER_SOURCE/conf/payloads/bindings.payload"
     if [ -f "$HYPR_CONF" ] && [ -f "$BIND_PAYLOAD" ]; then
@@ -124,7 +124,6 @@ do_setup() {
         fi
     fi
 
-    # Menu Integration
     do_menu_change
     echo "✔ Setup complete."
 }
@@ -136,9 +135,8 @@ do_menu_change() {
 
     [[ ! -f "$MENU_SH" ]] && return
 
-    if grep -q "ZEN PWA" "$MENU_SH"; then
-        echo "Detected existing menu modifications."
-        if gum confirm "Revert to clean snapshot before changing style?"; then
+    if ls "$MENU_SNAP_DIR"/*.bak >/dev/null 2>&1; then
+        if gum confirm "Existing snapshots detected. Restore one before changing style?"; then
             if ! do_restore "menu"; then
                 echo "Restore cancelled. Aborting changes."
                 return 1
@@ -148,7 +146,7 @@ do_menu_change() {
 
     mkdir -p "$MENU_SNAP_DIR"
     cp "$MENU_SH" "$MENU_SNAP_DIR/menu.sh.$TIMESTAMP.bak"
-    
+
     local choice=$(gum choose "Replace existing entries" "Add alongside entries")
     [[ -z "$choice" ]] && return
 
@@ -199,9 +197,8 @@ case "$1" in
         bash "$BASE_DIR/scripts/generate/generate_pwa_binds.sh"
         echo "✔ Binds/Templates refreshed."
         ;;
-    monitor) 
+    monitor)
         if [ "$INITIALIZED" = true ]; then
-            # We use the direct variable defined at the top
             bash "$PWA_MONITOR" --verbose
         else
             echo "Run setup."

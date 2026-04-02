@@ -1,12 +1,12 @@
 # Maintainer: nemphorous <https://github.com/nemphorous>
 pkgname=zpwa
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="Zen PWA Suite for Omarchy - Self-contained web apps via Zen Browser"
 arch=('any')
 url="https://github.com/nemphorous/zpwa"
 license=('GPL3')
-depends=('zen-browser' 'gum' 'curl' 'sed' 'grep' 'socat' 'jq')
+depends=('zen-browser' 'gum' 'curl' 'sed' 'grep' 'socat' 'jq' 'perl')
 provides=('zpwa')
 conflicts=('zpwa-git')
 install=zpwa.install

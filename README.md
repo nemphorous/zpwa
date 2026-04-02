@@ -131,7 +131,7 @@ Use at your own risk. See [Safety Design](#safety) for more information.
 * **[Walker](https://github.com/abenz1267/walker):** A high-speed, highly extensible Wayland application runner.
 
 ### Other Dependencies
-[gum](https://github.com/charmbracelet/gum) | [jQ](https://jqlang.org/) | [sed](https://www.gnu.org/software/sed/) | [curl](https://curl.se/) | [grep](https://www.gnu.org/software/grep/) | [socat](http://www.dest-unreach.org/socat/)
+[gum](https://github.com/charmbracelet/gum) | [jQ](https://jqlang.org/) | [sed](https://www.gnu.org/software/sed/) | [curl](https://curl.se/) | [grep](https://www.gnu.org/software/grep/) | [socat](http://www.dest-unreach.org/socat/) | [Perl](https://www.perl.org/)
 
 ## Contributing
 

@@ -1,11 +1,11 @@
 # --- INSTALL MENU (ADDITION) ---
 INST_SEARCH_ICON="  Web App"
-INST_REPLACE_ICON="  Web App\n󰗝  Web App"
+INST_REPLACE_ICON="  Web App\n󰗝  Zen App"
 INST_SEARCH_FUNC="*Web*) present_terminal omarchy-webapp-install ;;"
-INST_REPLACE_FUNC="*Web*) present_terminal omarchy-webapp-install ;;\n  *Web*) present_terminal omarchy-zenapp-install ;;"
+INST_REPLACE_FUNC="*Web*) present_terminal omarchy-webapp-install ;;\n  *Zen*) present_terminal omarchy-zenapp-install ;;"
 
 # --- REMOVE MENU (ADDITION) ---
 RM_SEARCH_ICON="  Web App"
-RM_REPLACE_ICON="  Web App\n󰗝  Web App"
+RM_REPLACE_ICON="  Web App\n󰗝  Zen App"
 RM_SEARCH_FUNC="*Web*) present_terminal omarchy-webapp-remove ;;"
-RM_REPLACE_FUNC="*Web*) present_terminal omarchy-webapp-remove ;;\n  *Web*) present_terminal omarchy-zenapp-remove ;;"
+RM_REPLACE_FUNC="*Web*) present_terminal omarchy-webapp-remove ;;\n  *Zen*) present_terminal omarchy-zenapp-remove ;;"
