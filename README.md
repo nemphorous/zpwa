@@ -44,7 +44,7 @@ See [PRODUCT.md](docs/PRODUCT.md) for more information.
 
 ```bash
 # Using yay as an example, substitute yay for the AUR Helper of your choice.
-yay -S zpwa-git
+yay -S zpwa
 zpwa setup
 ```
 
